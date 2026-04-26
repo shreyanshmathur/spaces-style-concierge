@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPACES — Style Concierge Widget Demo</title>
+  <meta name="description" content="POC demo of the AI-powered SPACES Style Concierge shopping assistant widget." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream:      #FAF7F2;
+      --sand:       #F0E8DC;
+      --terracotta: #C9784A;
+      --terra-dark: #9B4F28;
+      --charcoal:   #2D2520;
+      --muted:      #7A6560;
+    }
+
+    body { font-family: 'Inter', sans-serif; background: var(--cream); color: var(--charcoal); min-height: 100vh; }
+
+    /* ── Navbar ── */
+    nav {
+      background: #fff; border-bottom: 1px solid #EDE5DC;
+      padding: 0 40px; height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 600; letter-spacing: 0.12em; color: var(--charcoal); text-decoration: none; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a { font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; letter-spacing: 0.06em; text-transform: uppercase; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--terracotta); }
+    .nav-icons { display: flex; gap: 18px; color: var(--charcoal); cursor: pointer; }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 80px 40px 60px; max-width: 1140px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .hero-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 16px; }
+    .hero-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(38px, 5vw, 58px); font-weight: 300; line-height: 1.15; color: var(--charcoal); margin-bottom: 20px; }
+    .hero-title em { font-style: italic; color: var(--terracotta); }
+    .hero-sub { font-size: 15px; line-height: 1.7; color: var(--muted); margin-bottom: 32px; max-width: 420px; }
+    .hero-cta {
+      display: inline-block; background: linear-gradient(135deg, var(--terracotta), var(--terra-dark));
+      color: #fff; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 14px 32px; border-radius: 999px;
+      text-decoration: none; transition: opacity 0.2s, transform 0.2s;
+    }
+    .hero-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+    .hero-image-grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 200px 200px; gap: 12px; border-radius: 16px; overflow: hidden; }
+    .hero-img { object-fit: cover; width: 100%; height: 100%; }
+    .hero-img:first-child { grid-row: span 2; }
+
+    /* ── Sections ── */
+    .section { max-width: 1140px; margin: 0 auto 80px; padding: 0 40px; }
+    .section-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 10px; }
+    .section-title { font-family: 'Cormorant Garamond', serif; font-size: 36px; font-weight: 300; color: var(--charcoal); margin-bottom: 28px; }
+
+    /* ── Category filter tabs ── */
+    .filter-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+    .filter-tab {
+      background: #fff; border: 1.5px solid #DDD0C8; color: var(--muted);
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 8px 20px; border-radius: 999px; cursor: pointer; transition: all 0.2s ease;
+    }
+    .filter-tab:hover:not(.active) { border-color: var(--terracotta); color: var(--terracotta); }
+    .filter-tab.active { background: var(--terracotta); border-color: var(--terracotta); color: #fff; }
+
+    /* ── Dynamic product grid ── */
+    .product-grid-dynamic {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 24px;
+    }
+    .grid-loading { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 14px; grid-column: 1/-1; }
+
+    /* ── Product card ── */
+    .dyn-card {
+      background: #fff; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06); border: 1px solid #F0E8E0;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      display: flex; flex-direction: column;
+    }
+    .dyn-card:hover { transform: translateY(-4px); box-shadow: 0 10px 32px rgba(0,0,0,0.12); }
+    .dyn-card-img-wrap { position: relative; overflow: hidden; height: 200px; }
+    .dyn-card-img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+    .dyn-card:hover .dyn-card-img { transform: scale(1.04); }
+    .cat-badge {
+      position: absolute; top: 10px; left: 10px;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 999px; color: #fff;
+    }
+    .color-dot {
+      position: absolute; top: 10px; right: 10px;
+      width: 22px; height: 22px; border-radius: 50%; border: 2px solid #fff;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    }
+    .dyn-card-body { padding: 14px 16px 16px; flex: 1; display: flex; flex-direction: column; }
+    .dyn-card-name { font-size: 13.5px; font-weight: 600; color: var(--charcoal); line-height: 1.35; margin-bottom: 6px; }
+    .dyn-card-meta { font-size: 11.5px; color: var(--muted); margin-bottom: 10px; }
+    .dyn-card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+    .dyn-card-prices { display: flex; align-items: center; gap: 5px; }
+    .dyn-price { font-size: 14px; font-weight: 700; color: var(--charcoal); }
+    .dyn-orig  { font-size: 11.5px; color: #B8A89E; text-decoration: line-through; }
+    .dyn-sale  { background: #E8654A; color: #fff; font-size: 9.5px; font-weight: 700; padding: 2px 6px; border-radius: 4px; letter-spacing: 0.04em; }
+    .dyn-add-btn {
+      background: linear-gradient(135deg, var(--terracotta), var(--terra-dark));
+      color: #fff; border: none; font-family: 'Inter', sans-serif;
+      font-size: 11.5px; font-weight: 600; padding: 7px 14px; border-radius: 999px;
+      cursor: pointer; transition: opacity 0.2s, transform 0.2s; white-space: nowrap;
+    }
+    .dyn-add-btn:hover { opacity: 0.88; transform: scale(1.04); }
+    .dyn-add-btn.added { background: #4A9A6A; }
+
+    /* ── Category badge colours ── */
+    .cat-bedsheet  { background: #C9784A; }
+    .cat-bath      { background: #4A7AC9; }
+    .cat-pillow    { background: #7A6CC9; }
+    .cat-cushion   { background: #C97A4A; }
+    .cat-duvet     { background: #4A9A84; }
+    .cat-towelset  { background: #4A7AC9; }
+    .cat-doormat   { background: #9A7A4A; }
+    .cat-bathrobe  { background: #4A6C9A; }
+    .cat-default   { background: #7A8CA0; }
+
+    /* ── Complete the Look overlay & panel ── */
+    .ctl-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 200;
+      animation: fadeInOverlay 0.25s ease;
+    }
+    @keyframes fadeInOverlay { from { opacity: 0; } to { opacity: 1; } }
+
+    .ctl-panel {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #fff; border-radius: 24px 24px 0 0;
+      z-index: 201; max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 -8px 48px rgba(0,0,0,0.18);
+      animation: slideUp 0.3s cubic-bezier(0.34,1.2,0.64,1);
+    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    .ctl-handle { width: 40px; height: 4px; background: #DDD0C8; border-radius: 2px; margin: 12px auto 0; }
+
+    .ctl-header {
+      padding: 20px 28px 16px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid #F0E8E0;
+    }
+    .ctl-added-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #E8F5EE; color: #2A7A4A; font-size: 12px; font-weight: 600;
+      padding: 4px 12px; border-radius: 999px; margin-bottom: 4px;
+    }
+    .ctl-added-name { font-size: 14px; font-weight: 600; color: var(--charcoal); }
+    .ctl-close {
+      background: none; border: none; cursor: pointer; font-size: 22px;
+      color: var(--muted); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; transition: background 0.2s; flex-shrink: 0;
+    }
+    .ctl-close:hover { background: #F0E8E0; }
+
+    .ctl-body { padding: 20px 28px 24px; }
+    .ctl-section-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300;
+      color: var(--charcoal); margin-bottom: 6px;
+    }
+    .ctl-section-sub { font-size: 13px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+
+    .ctl-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px; margin-bottom: 24px;
+    }
+    .ctl-loading { text-align: center; padding: 32px; color: var(--muted); font-size: 14px; }
+
+    .ctl-card {
+      background: var(--cream); border-radius: 12px; overflow: hidden;
+      border: 1px solid #F0E8E0; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .ctl-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
+    .ctl-card-img { width: 100%; height: 140px; object-fit: cover; display: block; }
+    .ctl-card-body { padding: 10px 12px 12px; }
+    .ctl-card-name { font-size: 12.5px; font-weight: 600; color: var(--charcoal); margin-bottom: 3px; line-height: 1.3; }
+    .ctl-card-reason { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
+    .ctl-card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .ctl-card-price { font-size: 13px; font-weight: 700; color: var(--charcoal); }
+    .ctl-card-add {
+      background: linear-gradient(135deg, var(--terracotta), var(--terra-dark));
+      color: #fff; border: none; font-family: 'Inter', sans-serif;
+      font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 999px;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .ctl-card-add:hover { opacity: 0.88; }
+
+    .ctl-footer {
+      border-top: 1px solid #F0E8E0; padding: 16px 28px 28px;
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .ctl-checkout-btn {
+      flex: 1; background: linear-gradient(135deg, var(--charcoal), #3E302A);
+      color: #fff; border: none; font-family: 'Inter', sans-serif;
+      font-size: 14px; font-weight: 600; padding: 14px 28px; border-radius: 999px;
+      cursor: pointer; transition: opacity 0.2s; text-align: center; min-width: 180px;
+    }
+    .ctl-checkout-btn:hover { opacity: 0.88; }
+    .ctl-continue-btn {
+      background: none; border: 1.5px solid #DDD0C8; color: var(--muted);
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 13px 24px; border-radius: 999px; cursor: pointer; transition: all 0.2s;
+    }
+    .ctl-continue-btn:hover { border-color: var(--terracotta); color: var(--terracotta); }
+
+    /* ── Why section ── */
+    .why-section { background: linear-gradient(135deg, #2D2520, #3E302A); padding: 80px 40px; text-align: center; color: #fff; }
+    .why-eyebrow { font-size: 11px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--terracotta); margin-bottom: 14px; }
+    .why-title { font-family: 'Cormorant Garamond', serif; font-size: 42px; font-weight: 300; margin-bottom: 16px; max-width: 600px; margin-left: auto; margin-right: auto; }
+    .why-sub { font-size: 15px; color: rgba(255,255,255,0.65); max-width: 500px; margin: 0 auto 48px; line-height: 1.7; }
+    .why-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; max-width: 800px; margin: 0 auto; }
+    .why-card { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 28px 22px; text-align: center; }
+    .why-card-icon { font-size: 32px; margin-bottom: 14px; }
+    .why-card-title { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+    .why-card-text { font-size: 12.5px; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+    /* ── Footer ── */
+    footer { text-align: center; padding: 28px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--sand); }
+
+    /* ── POC Banner ── */
+    .poc-banner { background: linear-gradient(135deg, #FFF8F3, #FDEEE6); border: 1px solid #F5D9C8; border-radius: 12px; padding: 20px 28px; max-width: 1140px; margin: 0 auto 60px; display: flex; align-items: flex-start; gap: 16px; }
+    .poc-banner-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+    .poc-banner-title { font-size: 14px; font-weight: 600; color: var(--charcoal); margin-bottom: 6px; }
+    .poc-banner-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .poc-banner-text code { background: rgba(201,120,74,0.12); color: var(--terra-dark); padding: 1px 6px; border-radius: 4px; font-family: monospace; font-size: 12px; }
+
+    /* ── Cart counter ── */
+    .cart-count {
+      position: relative;
+    }
+    .cart-badge {
+      position: absolute; top: -6px; right: -8px;
+      background: var(--terracotta); color: #fff; font-size: 9px; font-weight: 700;
+      min-width: 16px; height: 16px; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 4px;
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; padding: 48px 20px 40px; }
+      .hero-image-grid { display: none; }
+      .why-cards { grid-template-columns: 1fr; }
+      nav { padding: 0 20px; }
+      .nav-links { display: none; }
+      .section { padding: 0 20px; }
+      .product-grid-dynamic { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+      .ctl-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+      .ctl-footer { flex-direction: column; }
+      .ctl-checkout-btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="#" class="nav-logo">SPACES</a>
+    <ul class="nav-links">
+      <li><a href="#">New In</a></li>
+      <li><a href="#">Bed</a></li>
+      <li><a href="#">Bath</a></li>
+      <li><a href="#">Rugs</a></li>
+      <li><a href="#">Mattresses</a></li>
+    </ul>
+    <div class="nav-icons">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <div class="cart-count">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span class="cart-badge" id="cart-badge" style="display:none">0</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div>
+      <p class="hero-eyebrow">Spring / Summer 2026</p>
+      <h1 class="hero-title">Sleep in <em>pure</em><br/>comfort</h1>
+      <p class="hero-sub">Discover India's finest bedding — crafted from premium cotton, bamboo, and linen. Designed to transform your bedroom into a sanctuary.</p>
+      <a href="#all-products" class="hero-cta">Shop the Collection</a>
+    </div>
+    <div class="hero-image-grid">
+      <img class="hero-img" src="https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&q=80" alt="Premium bedsheet" loading="lazy" />
+      <img class="hero-img" src="https://images.unsplash.com/photo-1615874959474-d609969a20ed?w=400&q=80" alt="Cosy bedroom" loading="lazy" />
+      <img class="hero-img" src="https://images.unsplash.com/photo-1540518614846-7eded433c457?w=400&q=80" alt="Linen bedding" loading="lazy" />
+    </div>
+  </section>
+
+  <!-- POC Banner -->
+  <div class="poc-banner" style="margin: 0 40px 60px; max-width: calc(100% - 80px);">
+    <div class="poc-banner-icon">🚀</div>
+    <div>
+      <div class="poc-banner-title">POC Demo — SPACES Style Concierge</div>
+      <div class="poc-banner-text">
+        The chat bubble (bottom right) is the AI widget. <strong>Click any "Add to Cart" button</strong> on a product to see the cross-sell experience.<br/>
+        <strong>To enable AI:</strong> add your <code>OPENROUTER_API_KEY</code> to <code>backend/.env</code> and run <code>uvicorn main:app --port 8001</code>.
+      </div>
+    </div>
+  </div>
+
+  <!-- All Products — Dynamic Grid -->
+  <section class="section" id="all-products">
+    <p class="section-eyebrow">Shop All</p>
+    <h2 class="section-title">Our collection</h2>
+
+    <div class="filter-tabs" id="filter-tabs">
+      <button class="filter-tab active" data-cat="all">All Products</button>
+      <button class="filter-tab" data-cat="bedsheet">Bedsheets</button>
+      <button class="filter-tab" data-cat="bath">Bath</button>
+      <button class="filter-tab" data-cat="bedroom">Bedroom Accessories</button>
+    </div>
+
+    <div class="product-grid-dynamic" id="product-grid">
+      <div class="grid-loading">Loading products…</div>
+    </div>
+  </section>
+
+  <!-- Why section -->
+  <section class="why-section">
+    <p class="why-eyebrow">AI Shopping Assistant</p>
+    <h2 class="why-title">Your personal style concierge</h2>
+    <p class="why-sub">Chat with AI, scan your room, or browse the full collection. We'll help you build a bedroom you'll love waking up in.</p>
+    <div class="why-cards">
+      <div class="why-card">
+        <div class="why-card-icon">📷</div>
+        <div class="why-card-title">Scan Your Room</div>
+        <div class="why-card-text">Upload a bedroom photo — AI detects your colour palette and recommends perfectly matched bedding.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">🛒</div>
+        <div class="why-card-title">Complete the Look</div>
+        <div class="why-card-text">Add any product and instantly see what pairs beautifully — towels, cushions, pillow covers and more.</div>
+      </div>
+      <div class="why-card">
+        <div class="why-card-icon">💬</div>
+        <div class="why-card-title">Follow-up Chat</div>
+        <div class="why-card-text">Ask anything — alternatives, fabric care, delivery, returns. Get instant expert answers anytime.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <p>© 2026 SPACES India — Demo page for AI Shopping Assistant POC. Not a real SPACES deployment.</p>
+  </footer>
+
+  <!-- Complete the Look Panel -->
+  <div class="ctl-overlay" id="ctl-overlay" style="display:none"></div>
+  <div class="ctl-panel" id="ctl-panel" style="display:none">
+    <div class="ctl-handle"></div>
+    <div class="ctl-header">
+      <div>
+        <div class="ctl-added-pill">✓ Added to Cart</div>
+        <div class="ctl-added-name" id="ctl-added-name">Product name</div>
+      </div>
+      <button class="ctl-close" id="ctl-close">&times;</button>
+    </div>
+    <div class="ctl-body">
+      <div class="ctl-section-title">Complete the look</div>
+      <div class="ctl-section-sub" id="ctl-section-sub">Customers who added this also loved these pairings.</div>
+      <div class="ctl-grid" id="ctl-grid">
+        <div class="ctl-loading">✨ Finding perfect pairings…</div>
+      </div>
+    </div>
+    <div class="ctl-footer">
+      <button class="ctl-checkout-btn" onclick="window.open('https://spaces.in','_blank')">Proceed to Checkout →</button>
+      <button class="ctl-continue-btn" id="ctl-continue">Continue Shopping</button>
+    </div>
+  </div>
+
+  <!-- ✅ THE WIDGET -->
+  <script src="spaces-widget.js" data-api-url="http://localhost:8003"></script>
+
+  <script>
+  (function () {
+    'use strict';
+    var API = 'http://localhost:8003';
+    var cartCount = 0;
+    var activeFilter = 'all';
+
+    var FALLBACK_IMG = 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=400&q=80';
+
+    // Category classification
+    var BATH_CATS  = ['Bath Towel','Hand Towel','Towel Set','Bath Mat','Bath Robe'];
+    var BED_CATS   = ['Pillow','Pillow Cover','Duvet Cover','Cushion Cover','Door Mat'];
+
+    function getCatGroup(cat) {
+      if (cat === 'Bedsheet') return 'bedsheet';
+      if (BATH_CATS.indexOf(cat) !== -1) return 'bath';
+      if (BED_CATS.indexOf(cat) !== -1) return 'bedroom';
+      return 'bedroom';
+    }
+
+    function getCatBadgeClass(cat) {
+      if (cat === 'Bedsheet') return 'cat-bedsheet';
+      if (BATH_CATS.indexOf(cat) !== -1) return 'cat-bath';
+      if (cat === 'Pillow' || cat === 'Pillow Cover') return 'cat-pillow';
+      if (cat === 'Cushion Cover') return 'cat-cushion';
+      if (cat === 'Duvet Cover') return 'cat-duvet';
+      if (cat === 'Towel Set') return 'cat-towelset';
+      if (cat === 'Bath Robe') return 'cat-bathrobe';
+      if (cat === 'Door Mat') return 'cat-doormat';
+      return 'cat-default';
+    }
+
+    // Map color names to CSS colour values for the dot
+    var COLOR_MAP = {
+      'white': '#F5F5F0', 'ivory': '#FFFFF0', 'cream': '#FFFDD0', 'sand': '#C2B280',
+      'natural': '#D2B48C', 'terracotta': '#C9784A', 'rust': '#B7410E',
+      'sage green': '#8FAF7E', 'olive green': '#708238', 'olive': '#708238',
+      'navy blue': '#1B2A6B', 'navy': '#1B2A6B', 'midnight blue': '#191970',
+      'blue': '#4169E1', 'teal': '#008080', 'coral': '#FF6B6B',
+      'peach': '#FFCBA4', 'lilac': '#C8A2C8', 'burgundy': '#800020',
+      'multicolor': 'linear-gradient(135deg,#C9784A,#4A7AC9,#7A4AC9)',
+      'yellow': '#FFD700', 'charcoal': '#36454F', 'maple': '#C06030',
+      'ivory & green': '#8FAF7E', 'white floral': '#F0F0F0',
+      'sea green': '#2E8B57',
+    };
+
+    function getColorStyle(colorName) {
+      if (!colorName) return 'background:#DDD0C8;';
+      var key = colorName.toLowerCase();
+      var val = COLOR_MAP[key];
+      if (!val) return 'background:#DDD0C8;';
+      if (val.indexOf('gradient') !== -1) return 'background:' + val + ';';
+      return 'background:' + val + ';';
+    }
+
+    // Render a product card
+    function renderCard(p) {
+      var hasDiscount = p.discountedPrice && p.discountedPrice < p.price;
+      var price = hasDiscount ? p.discountedPrice : p.price;
+      var fabric = [p.fabricType, p.color].filter(Boolean).join(' · ');
+
+      var card = document.createElement('div');
+      card.className = 'dyn-card';
+      card.dataset.cat = getCatGroup(p.category);
+      card.dataset.sku = p.sku;
+
+      card.innerHTML =
+        '<div class="dyn-card-img-wrap">' +
+          '<img class="dyn-card-img" src="' + p.thumbnailUrl + '" alt="' + p.name + '" loading="lazy"' +
+               ' onerror="this.src=\'' + FALLBACK_IMG + '\'" />' +
+          '<span class="cat-badge ' + getCatBadgeClass(p.category) + '">' + p.category + '</span>' +
+          '<span class="color-dot" style="' + getColorStyle(p.color) + '" title="' + (p.color || '') + '"></span>' +
+        '</div>' +
+        '<div class="dyn-card-body">' +
+          '<div class="dyn-card-name">' + p.name + '</div>' +
+          '<div class="dyn-card-meta">' + fabric + (p.threadCount ? ' · ' + p.threadCount + 'TC' : '') + '</div>' +
+          '<div class="dyn-card-footer">' +
+            '<div class="dyn-card-prices">' +
+              '<span class="dyn-price">&#8377;' + price.toLocaleString('en-IN') + '</span>' +
+              (hasDiscount ? '<span class="dyn-orig">&#8377;' + p.price.toLocaleString('en-IN') + '</span>' +
+                             '<span class="dyn-sale">SALE</span>' : '') +
+            '</div>' +
+            '<button class="dyn-add-btn" data-sku="' + p.sku + '">Add to Cart</button>' +
+          '</div>' +
+        '</div>';
+
+      card.querySelector('.dyn-add-btn').addEventListener('click', function (e) {
+        e.stopPropagation();
+        handleAddToCart(p, this);
+      });
+
+      return card;
+    }
+
+    // All products in memory
+    var allProducts = [];
+
+    function renderGrid(filter) {
+      var grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+      var shown = allProducts.filter(function (p) {
+        if (filter === 'all') return true;
+        return getCatGroup(p.category) === filter;
+      });
+      if (!shown.length) {
+        grid.innerHTML = '<div class="grid-loading">No products found.</div>';
+        return;
+      }
+      shown.forEach(function (p) { grid.appendChild(renderCard(p)); });
+    }
+
+    // Load catalog
+    fetch(API + '/api/catalog')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        allProducts = data.products || [];
+        renderGrid('all');
+      })
+      .catch(function () {
+        document.getElementById('product-grid').innerHTML =
+          '<div class="grid-loading" style="color:#A83820">⚠️ Could not load products. Is the backend running on port 8001?</div>';
+      });
+
+    // Filter tabs
+    document.getElementById('filter-tabs').addEventListener('click', function (e) {
+      var tab = e.target.closest('.filter-tab');
+      if (!tab) return;
+      document.querySelectorAll('.filter-tab').forEach(function (t) { t.classList.remove('active'); });
+      tab.classList.add('active');
+      activeFilter = tab.dataset.cat;
+      renderGrid(activeFilter);
+    });
+
+    // ── Cart & Complete the Look ─────────────────────────────────────────────
+    function handleAddToCart(product, btn) {
+      // Animate the button
+      btn.textContent = '✓ Added';
+      btn.classList.add('added');
+      setTimeout(function () {
+        btn.textContent = 'Add to Cart';
+        btn.classList.remove('added');
+      }, 2000);
+
+      // Update cart count
+      cartCount++;
+      var badge = document.getElementById('cart-badge');
+      badge.style.display = 'flex';
+      badge.textContent = cartCount;
+
+      // Open Complete the Look panel
+      openCTL(product);
+    }
+
+    function openCTL(product) {
+      document.getElementById('ctl-added-name').textContent = product.name;
+      document.getElementById('ctl-grid').innerHTML = '<div class="ctl-loading">✨ Finding perfect pairings…</div>';
+      document.getElementById('ctl-section-sub').textContent = 'Customers who added this also loved these pairings.';
+
+      document.getElementById('ctl-overlay').style.display = 'block';
+      document.getElementById('ctl-panel').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+
+      // Fetch related products
+      fetch(API + '/api/related-products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ selected_sku: product.sku, cart_skus: [product.sku], limit: 4 }),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          if (data.intro_message) {
+            document.getElementById('ctl-section-sub').textContent = data.intro_message;
+          }
+          renderCTLCards(data.recommendations || []);
+        })
+        .catch(function () {
+          document.getElementById('ctl-grid').innerHTML =
+            '<div class="ctl-loading" style="color:#A83820">⚠️ Could not load suggestions.</div>';
+        });
+    }
+
+    function renderCTLCards(recs) {
+      var grid = document.getElementById('ctl-grid');
+      if (!recs.length) {
+        grid.innerHTML = '<div class="ctl-loading">No suggestions found.</div>';
+        return;
+      }
+      grid.innerHTML = '';
+      recs.forEach(function (p) {
+        var hasDiscount = p.discounted_price && p.discounted_price < p.price;
+        var price = hasDiscount ? p.discounted_price : p.price;
+        var card = document.createElement('div');
+        card.className = 'ctl-card';
+        card.innerHTML =
+          '<img class="ctl-card-img" src="' + p.thumbnail_url + '" alt="' + p.name + '" loading="lazy"' +
+               ' onerror="this.src=\'' + FALLBACK_IMG + '\'" />' +
+          '<div class="ctl-card-body">' +
+            '<div class="ctl-card-name">' + p.name + '</div>' +
+            '<div class="ctl-card-reason">' + p.reason + '</div>' +
+            '<div class="ctl-card-footer">' +
+              '<span class="ctl-card-price">&#8377;' + price.toLocaleString('en-IN') + '</span>' +
+              '<button class="ctl-card-add" data-url="' + p.product_url + '">Add</button>' +
+            '</div>' +
+          '</div>';
+        card.querySelector('.ctl-card-add').addEventListener('click', function () {
+          cartCount++;
+          var badge = document.getElementById('cart-badge');
+          badge.style.display = 'flex';
+          badge.textContent = cartCount;
+          this.textContent = '✓';
+          this.style.background = '#4A9A6A';
+          this.disabled = true;
+        });
+        grid.appendChild(card);
+      });
+    }
+
+    function closeCTL() {
+      document.getElementById('ctl-overlay').style.display = 'none';
+      document.getElementById('ctl-panel').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('ctl-close').addEventListener('click', closeCTL);
+    document.getElementById('ctl-continue').addEventListener('click', closeCTL);
+    document.getElementById('ctl-overlay').addEventListener('click', closeCTL);
+
+  })();
+  </script>
+
+</body>
+</html>
