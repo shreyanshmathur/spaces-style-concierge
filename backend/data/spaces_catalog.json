@@ -35,7 +35,7 @@
   },
   {
     "sku": "SPC-KG-PERC-003",
-    "name": "SPACES Atrium Percale King Bedsheet — Ivory",
+    "name": "SPACES Atrium Percale King Bedsheet - Ivory",
     "category": "Bedsheet",
     "color": "Ivory",
     "bedSize": ["King", "Single"],
@@ -52,7 +52,7 @@
   },
   {
     "sku": "SPC-QN-PERC-004",
-    "name": "SPACES Atrium Percale Queen Bedsheet — Ivory",
+    "name": "SPACES Atrium Percale Queen Bedsheet - Ivory",
     "category": "Bedsheet",
     "color": "Ivory",
     "bedSize": ["Queen"],
@@ -86,7 +86,7 @@
   },
   {
     "sku": "SPC-KG-SATEEN-006",
-    "name": "SPACES Luxury Sateen 300TC King Bedsheet — Cream",
+    "name": "SPACES Luxury Sateen 300TC King Bedsheet - Cream",
     "category": "Bedsheet",
     "color": "Cream",
     "bedSize": ["King"],
@@ -103,7 +103,7 @@
   },
   {
     "sku": "SPC-QN-SATEEN-007",
-    "name": "SPACES Luxury Sateen 300TC Queen Bedsheet — Cream",
+    "name": "SPACES Luxury Sateen 300TC Queen Bedsheet - Cream",
     "category": "Bedsheet",
     "color": "Cream",
     "bedSize": ["Queen"],
@@ -120,7 +120,7 @@
   },
   {
     "sku": "SPC-KG-FLANNEL-008",
-    "name": "SPACES Snuggle Flannel King Bedsheet — Burgundy",
+    "name": "SPACES Snuggle Flannel King Bedsheet - Burgundy",
     "category": "Bedsheet",
     "color": "Burgundy",
     "bedSize": ["King"],
@@ -137,7 +137,7 @@
   },
   {
     "sku": "SPC-QN-FLANNEL-009",
-    "name": "SPACES Snuggle Flannel Queen Bedsheet — Burgundy",
+    "name": "SPACES Snuggle Flannel Queen Bedsheet - Burgundy",
     "category": "Bedsheet",
     "color": "Burgundy",
     "bedSize": ["Queen"],
@@ -154,7 +154,7 @@
   },
   {
     "sku": "SPC-KG-BCS-010",
-    "name": "SPACES Bamboo Cool-Sleep King Bedsheet — Natural",
+    "name": "SPACES Bamboo Cool-Sleep King Bedsheet - Natural",
     "category": "Bedsheet",
     "color": "Natural",
     "bedSize": ["King"],
@@ -171,7 +171,7 @@
   },
   {
     "sku": "SPC-QN-BCS-011",
-    "name": "SPACES Bamboo Cool-Sleep Queen Bedsheet — Natural",
+    "name": "SPACES Bamboo Cool-Sleep Queen Bedsheet - Natural",
     "category": "Bedsheet",
     "color": "Natural",
     "bedSize": ["Queen"],
@@ -188,7 +188,7 @@
   },
   {
     "sku": "SPC-SG-HYGRO-012",
-    "name": "SPACES Swift Dry Hygro Cotton Single Bedsheet — White",
+    "name": "SPACES Swift Dry Hygro Cotton Single Bedsheet - White",
     "category": "Bedsheet",
     "color": "White",
     "bedSize": ["Single"],
@@ -205,7 +205,7 @@
   },
   {
     "sku": "SPC-KG-COZY-013",
-    "name": "SPACES Colorplay Bold Print King Bedsheet — Multi",
+    "name": "SPACES Colorplay Bold Print King Bedsheet - Multi",
     "category": "Bedsheet",
     "color": "Multicolor",
     "bedSize": ["King"],
@@ -222,7 +222,7 @@
   },
   {
     "sku": "SPC-QN-LINEN-014",
-    "name": "SPACES Serene Linen-Look Queen Bedsheet — Sand",
+    "name": "SPACES Serene Linen-Look Queen Bedsheet - Sand",
     "category": "Bedsheet",
     "color": "Sand",
     "bedSize": ["Queen"],
@@ -239,7 +239,7 @@
   },
   {
     "sku": "SPC-KG-LINEN-015",
-    "name": "SPACES Serene Linen-Look King Bedsheet — Sand",
+    "name": "SPACES Serene Linen-Look King Bedsheet - Sand",
     "category": "Bedsheet",
     "color": "Sand",
     "bedSize": ["King"],
@@ -256,7 +256,7 @@
   },
   {
     "sku": "SPC-SG-FLANNEL-031",
-    "name": "SPACES Snuggle Flannel Single Bedsheet — Rust",
+    "name": "SPACES Snuggle Flannel Single Bedsheet - Rust",
     "category": "Bedsheet",
     "color": "Rust",
     "bedSize": ["Single"],
@@ -273,7 +273,7 @@
   },
   {
     "sku": "SPC-SG-COLOR-032",
-    "name": "SPACES Colorplay Bold Print Single Bedsheet — Teal",
+    "name": "SPACES Colorplay Bold Print Single Bedsheet - Teal",
     "category": "Bedsheet",
     "color": "Teal",
     "bedSize": ["Single"],
@@ -341,7 +341,7 @@
   },
   {
     "sku": "SPC-PL-MICRO-016",
-    "name": "Solid White Microfiber Pillow — Essentials By Spaces",
+    "name": "Solid White Microfiber Pillow - Essentials By Spaces",
     "category": "Pillow",
     "color": "White",
     "bedSize": [],
@@ -359,7 +359,7 @@
   },
   {
     "sku": "SPC-PL-QUILT-017",
-    "name": "Solid White Quilted Pillows Pack of 2 — Spaces",
+    "name": "Solid White Quilted Pillows Pack of 2 - Spaces",
     "category": "Pillow",
     "color": "White",
     "bedSize": [],
@@ -377,7 +377,7 @@
   },
   {
     "sku": "SPC-PL-TERRA-048",
-    "name": "Terracotta Microfiber Pillow — SPACES",
+    "name": "Terracotta Microfiber Pillow - SPACES",
     "category": "Pillow",
     "color": "Terracotta",
     "bedSize": [],
@@ -395,7 +395,7 @@
   },
   {
     "sku": "SPC-PL-NAVY-049",
-    "name": "Midnight Navy Microfiber Pillow — SPACES",
+    "name": "Midnight Navy Microfiber Pillow - SPACES",
     "category": "Pillow",
     "color": "Navy",
     "bedSize": [],
@@ -413,7 +413,7 @@
   },
   {
     "sku": "SPC-PC-FLORA-018",
-    "name": "Spaces Flora Cotton Percale Pillow Cover Set — White",
+    "name": "Spaces Flora Cotton Percale Pillow Cover Set - White",
     "category": "Pillow Cover",
     "color": "White Floral",
     "bedSize": [],
@@ -431,7 +431,7 @@
   },
   {
     "sku": "SPC-PC-SAGE-039",
-    "name": "Sage Green Cotton Percale Pillow Cover Set — SPACES",
+    "name": "Sage Green Cotton Percale Pillow Cover Set - SPACES",
     "category": "Pillow Cover",
     "color": "Sage Green",
     "bedSize": [],
@@ -449,7 +449,7 @@
   },
   {
     "sku": "SPC-PC-TERRA-040",
-    "name": "Terracotta Cotton Pillow Cover Set — SPACES",
+    "name": "Terracotta Cotton Pillow Cover Set - SPACES",
     "category": "Pillow Cover",
     "color": "Terracotta",
     "bedSize": [],
@@ -467,7 +467,7 @@
   },
   {
     "sku": "SPC-TW-LILAC-019",
-    "name": "Lilac 100% Cotton Bath Towel — Hygro By Spaces",
+    "name": "Lilac 100% Cotton Bath Towel - Hygro By Spaces",
     "category": "Bath Towel",
     "color": "Lilac",
     "bedSize": [],
@@ -485,7 +485,7 @@
   },
   {
     "sku": "SPC-TW-MIDBLUE-020",
-    "name": "Midnight Blue 100% Cotton Bath Towel — Hygro By Spaces",
+    "name": "Midnight Blue 100% Cotton Bath Towel - Hygro By Spaces",
     "category": "Bath Towel",
     "color": "Midnight Blue",
     "bedSize": [],
@@ -503,7 +503,7 @@
   },
   {
     "sku": "SPC-TW-OLIVE-036",
-    "name": "Olive Green 100% Cotton Bath Towel — Hygro By Spaces",
+    "name": "Olive Green 100% Cotton Bath Towel - Hygro By Spaces",
     "category": "Bath Towel",
     "color": "Olive Green",
     "bedSize": [],
@@ -521,7 +521,7 @@
   },
   {
     "sku": "SPC-TW-PEACH-037",
-    "name": "Peach Blossom 100% Cotton Bath Towel — Hygro By Spaces",
+    "name": "Peach Blossom 100% Cotton Bath Towel - Hygro By Spaces",
     "category": "Bath Towel",
     "color": "Peach",
     "bedSize": [],
@@ -539,7 +539,7 @@
   },
   {
     "sku": "SPC-TW-CORAL-038",
-    "name": "Coral Pink 100% Cotton Bath Towel — Hygro By Spaces",
+    "name": "Coral Pink 100% Cotton Bath Towel - Hygro By Spaces",
     "category": "Bath Towel",
     "color": "Coral",
     "bedSize": [],
@@ -557,7 +557,7 @@
   },
   {
     "sku": "SPC-HT-MAPLE-021",
-    "name": "Maple Sugar 2-Piece Cotton Hand Towel — Hygro By Spaces",
+    "name": "Maple Sugar 2-Piece Cotton Hand Towel - Hygro By Spaces",
     "category": "Hand Towel",
     "color": "Maple",
     "bedSize": [],
@@ -575,7 +575,7 @@
   },
   {
     "sku": "SPC-HT-CORAL-050",
-    "name": "Coral 2-Piece Cotton Hand Towel — Hygro By Spaces",
+    "name": "Coral 2-Piece Cotton Hand Towel - Hygro By Spaces",
     "category": "Hand Towel",
     "color": "Coral",
     "bedSize": [],
@@ -593,7 +593,7 @@
   },
   {
     "sku": "SPC-HT-SAGE-051",
-    "name": "Sage Green 2-Piece Cotton Hand Towel — Hygro By Spaces",
+    "name": "Sage Green 2-Piece Cotton Hand Towel - Hygro By Spaces",
     "category": "Hand Towel",
     "color": "Sage Green",
     "bedSize": [],
@@ -611,7 +611,7 @@
   },
   {
     "sku": "SPC-TS-SEAGREEN-022",
-    "name": "Sea Green 6-Piece Cotton Towel Set — Seasons Best By Spaces",
+    "name": "Sea Green 6-Piece Cotton Towel Set - Seasons Best By Spaces",
     "category": "Towel Set",
     "color": "Sea Green",
     "bedSize": [],
@@ -629,7 +629,7 @@
   },
   {
     "sku": "SPC-TS-NAVY-047",
-    "name": "Navy Blue 6-Piece Cotton Towel Set — SPACES",
+    "name": "Navy Blue 6-Piece Cotton Towel Set - SPACES",
     "category": "Towel Set",
     "color": "Navy Blue",
     "bedSize": [],
@@ -647,7 +647,7 @@
   },
   {
     "sku": "SPC-BM-DRYLON-023",
-    "name": "Blue Summer Drylon Bath Mat — Swift Dry By Spaces",
+    "name": "Blue Summer Drylon Bath Mat - Swift Dry By Spaces",
     "category": "Bath Mat",
     "color": "Blue",
     "bedSize": [],
@@ -665,7 +665,7 @@
   },
   {
     "sku": "SPC-BM-HYGRO-024",
-    "name": "Ivory Hygro Cotton Bath Mat — SPACES",
+    "name": "Ivory Hygro Cotton Bath Mat - SPACES",
     "category": "Bath Mat",
     "color": "Ivory",
     "bedSize": [],
@@ -683,7 +683,7 @@
   },
   {
     "sku": "SPC-BM-TERRA-044",
-    "name": "Terracotta Cotton Bath Mat — SPACES",
+    "name": "Terracotta Cotton Bath Mat - SPACES",
     "category": "Bath Mat",
     "color": "Terracotta",
     "bedSize": [],
@@ -701,7 +701,7 @@
   },
   {
     "sku": "SPC-BM-OLIVE-045",
-    "name": "Olive Green Cotton Bath Mat — SPACES",
+    "name": "Olive Green Cotton Bath Mat - SPACES",
     "category": "Bath Mat",
     "color": "Olive Green",
     "bedSize": [],
@@ -719,7 +719,7 @@
   },
   {
     "sku": "SPC-DC-MIDBLUE-025",
-    "name": "Midnight Blue Cotton Duvet Cover — Hygro By Spaces",
+    "name": "Midnight Blue Cotton Duvet Cover - Hygro By Spaces",
     "category": "Duvet Cover",
     "color": "Midnight Blue",
     "bedSize": [],
@@ -737,7 +737,7 @@
   },
   {
     "sku": "SPC-DC-CREAM-026",
-    "name": "Solid Cream Cotton Duvet Cover — Hygro By Spaces",
+    "name": "Solid Cream Cotton Duvet Cover - Hygro By Spaces",
     "category": "Duvet Cover",
     "color": "Cream",
     "bedSize": [],
@@ -755,7 +755,7 @@
   },
   {
     "sku": "SPC-DC-TERRA-046",
-    "name": "Terracotta Cotton Duvet Cover — SPACES",
+    "name": "Terracotta Cotton Duvet Cover - SPACES",
     "category": "Duvet Cover",
     "color": "Terracotta",
     "bedSize": [],
@@ -773,7 +773,7 @@
   },
   {
     "sku": "SPC-CC-IVORY-027",
-    "name": "Ivory & Green Abstract Cotton Cushion Cover — SPACES",
+    "name": "Ivory & Green Abstract Cotton Cushion Cover - SPACES",
     "category": "Cushion Cover",
     "color": "Ivory & Green",
     "bedSize": [],
@@ -791,7 +791,7 @@
   },
   {
     "sku": "SPC-CC-YELLOW-028",
-    "name": "Sunshine Yellow Cotton Cushion Cover — SPACES Spun",
+    "name": "Sunshine Yellow Cotton Cushion Cover - SPACES Spun",
     "category": "Cushion Cover",
     "color": "Yellow",
     "bedSize": [],
@@ -809,7 +809,7 @@
   },
   {
     "sku": "SPC-CC-TERRA-041",
-    "name": "Terracotta Abstract Cotton Cushion Cover — SPACES",
+    "name": "Terracotta Abstract Cotton Cushion Cover - SPACES",
     "category": "Cushion Cover",
     "color": "Terracotta",
     "bedSize": [],
@@ -827,7 +827,7 @@
   },
   {
     "sku": "SPC-CC-SAGE-042",
-    "name": "Sage Green Solid Cotton Cushion Cover — SPACES",
+    "name": "Sage Green Solid Cotton Cushion Cover - SPACES",
     "category": "Cushion Cover",
     "color": "Sage Green",
     "bedSize": [],
@@ -845,7 +845,7 @@
   },
   {
     "sku": "SPC-CC-NAVY-043",
-    "name": "Navy Blue Geometric Cotton Cushion Cover — SPACES",
+    "name": "Navy Blue Geometric Cotton Cushion Cover - SPACES",
     "category": "Cushion Cover",
     "color": "Navy Blue",
     "bedSize": [],
@@ -863,7 +863,7 @@
   },
   {
     "sku": "SPC-DM-KIDS-029",
-    "name": "Kids Nylon Foot Mat — Character, Cream By Spaces",
+    "name": "Kids Nylon Foot Mat - Character, Cream By Spaces",
     "category": "Door Mat",
     "color": "Cream",
     "bedSize": [],
@@ -881,7 +881,7 @@
   },
   {
     "sku": "SPC-BR-EXOTICA-030",
-    "name": "Exotica 100% Cotton Bath Robe — Cream By Spaces",
+    "name": "Exotica 100% Cotton Bath Robe - Cream By Spaces",
     "category": "Bath Robe",
     "color": "Cream",
     "bedSize": [],
@@ -899,7 +899,7 @@
   },
   {
     "sku": "SPC-BR-CHARCOAL-052",
-    "name": "Charcoal Cotton Bath Robe — SPACES",
+    "name": "Charcoal Cotton Bath Robe - SPACES",
     "category": "Bath Robe",
     "color": "Charcoal",
     "bedSize": [],

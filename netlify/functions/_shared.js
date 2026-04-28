@@ -7,6 +7,21 @@
 // NOTE: Use a static string so Netlify's bundler can trace the dependency.
 const CATALOG = require('../../backend/data/spaces_catalog.json');
 
+function stripDashes(text) {
+  if (typeof text !== 'string') return text;
+  // Replace em-dash (\u2014) and en-dash (\u2013) with hyphen (-)
+  return text.replace(/\u2014/g, '-').replace(/\u2013/g, '-');
+}
+
+function cleanProduct(p) {
+  return {
+    ...p,
+    name: stripDashes(p.name),
+    reason: stripDashes(p.reason),
+    fabricType: stripDashes(p.fabricType)
+  };
+}
+
 const FABRIC_MAP = {
   Cotton: ['Hygro Cotton', 'Percale Cotton', 'Sateen Cotton', 'Flannel', 'Cotton Blend'],
   Linen:  ['Linen Blend'],
@@ -16,15 +31,16 @@ const FABRIC_MAP = {
 function filterCatalog({ bedSize, sleepTemp, fabric, styleVibe, maxResults = 12 } = {}) {
   let results = [...CATALOG];
 
-  // Specific size filtering
+  // STRICT size filtering
   if (bedSize && bedSize !== 'No preference') {
     const matchedSize = results.filter(p => p.bedSize && p.bedSize.includes(bedSize));
-    // If we have bedsheets in this size, keep ONLY those plus accessories
     if (matchedSize.length > 0) {
+      // ONLY show exact size matches + accessories
       results = results.filter(p => !p.bedSize || p.bedSize.length === 0 || p.bedSize.includes(bedSize));
     } else {
-      // If NO bedsheets match this size, keep accessories but don't filter bedsheets yet
-      // This allows the AI to see the catalog and explain the unavailability
+      // If NO bedsheets match this size, ONLY show accessories (pillows/towels)
+      // This forces the AI to acknowledge we have no sheets in that size.
+      results = results.filter(p => !p.bedSize || p.bedSize.length === 0);
     }
   }
 
@@ -47,9 +63,9 @@ function filterCatalog({ bedSize, sleepTemp, fabric, styleVibe, maxResults = 12 
   }
 
   // Final check: if we filtered down to nothing, return the first few versatile items
-  if (results.length === 0) return CATALOG.slice(0, maxResults);
+  if (results.length === 0) return CATALOG.slice(0, maxResults).map(cleanProduct);
 
-  return results.slice(0, maxResults);
+  return results.slice(0, maxResults).map(cleanProduct);
 }
 
 function catalogToPromptText(products) {
@@ -165,7 +181,7 @@ async function callOpenRouter(model, messages, maxTokens) {
   const data    = await res.json();
   const content = data.choices?.[0]?.message?.content;
   if (!content) throw new Error(`Model ${model} returned empty content`);
-  return content.trim();
+  return stripDashes(content.trim());
 }
 
 async function callGroq(model, messages, maxTokens) {
@@ -188,7 +204,7 @@ async function callGroq(model, messages, maxTokens) {
   const data    = await res.json();
   const content = data.choices?.[0]?.message?.content;
   if (!content) throw new Error(`Groq model ${model} returned empty content`);
-  return content.trim();
+  return stripDashes(content.trim());
 }
 
 async function callLLM(systemPrompt, userMessage, historyMessages = [], maxTokens = 1500) {

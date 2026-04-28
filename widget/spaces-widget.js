@@ -1,7 +1,7 @@
 /**
  * SPACES Style Concierge Widget
  * Drop-in AI shopping assistant for spaces.in
- * Version: 0.2.0-poc  — photo + text mode
+ * Version: 0.2.0-poc - photo + text mode
  *
  * Usage: <script src="spaces-widget.js" data-api-url=""></script>
  */
@@ -460,7 +460,7 @@
         <span class="sp-choice-icon">📷</span>
         <div>
           <div class="sp-choice-title">Scan my room</div>
-          <div class="sp-choice-sub">Upload a photo — I'll match bedding to your decor</div>
+          <div class="sp-choice-sub">Upload a photo: I'll match bedding to your decor</div>
         </div>
       </button>
       <button class="sp-choice-btn" id="sp-choice-text">
@@ -518,7 +518,7 @@
   }
 
   function processImageFile(file) {
-    if (file.size > 8 * 1024 * 1024) { addError("Image too large — please use a file under 8 MB."); return; }
+    if (file.size > 8 * 1024 * 1024) { addError("Image too large: please use a file under 8 MB."); return; }
 
     const reader = new FileReader();
     reader.onload = (ev) => {
@@ -554,7 +554,7 @@
   function askBedSizeForPhoto() {
     if (state.stage === "photo-size") return; // already asked
     state.stage = "photo-size";
-    addBotMessage("Great photo! Just one quick thing — what size is your bed?");
+    addBotMessage("Great photo! Just one quick thing: what size is your bed?");
     renderChips(
       ["Single","Double","Queen","King"].map(v => ({ label:v, value:v })),
       (val) => {
@@ -569,7 +569,7 @@
 
   async function submitRoomAnalysis() {
     state.stage = "loading";
-    addBotMessage("Analysing your room — finding bedding that complements your space...");
+    addBotMessage("Analysing your room... finding bedding that complements your space...");
     setProgress(60);
     showTyping();
 
@@ -675,7 +675,7 @@
   // ── Chat mode ────────────────────────────────────────────────────────────
   function activateChatMode() {
     state.stage = "chat";
-    addBotMessage("Feel free to ask me anything — 'Show warmer options', 'What fabric is this?', or upload another photo to compare! 💬");
+    addBotMessage("Feel free to ask me anything: 'Show warmer options', 'What fabric is this?', or upload another photo to compare! 💬");
     inputRowEl.style.display = "flex";
     chipsEl.style.display = "none";
     inputEl.focus();
