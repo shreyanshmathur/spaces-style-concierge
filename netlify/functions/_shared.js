@@ -128,11 +128,8 @@ const FALLBACK_MODELS = [
   'meta-llama/llama-3.2-3b-instruct:free',
   'nvidia/llama-3.1-nemotron-70b-instruct:free',
 ];
-const VISION_MODELS = [
-  'meta-llama/llama-3.2-11b-vision-instruct:free',
-  'google/gemini-2.0-flash-lite-preview-02-05:free',
-  'google/gemini-2.0-pro-exp-02-05:free'
-];
+// Groq vision model (free tier via api.groq.com)
+const GROQ_VISION_MODEL = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
 async function callOpenRouter(model, messages, maxTokens) {
   const apiKey = process.env.OPENROUTER_API_KEY;
@@ -159,9 +156,44 @@ async function callOpenRouter(model, messages, maxTokens) {
   return content.trim();
 }
 
+async function callGroq(model, messages, maxTokens) {
+  const apiKey = process.env.GROQ_API_KEY;
+  if (!apiKey) throw Object.assign(new Error('GROQ_API_KEY not set'), { status: 500 });
+
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ model, messages, max_tokens: maxTokens }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw Object.assign(new Error(`Groq ${res.status}: ${text.slice(0, 200)}`), { status: res.status });
+  }
+  const data    = await res.json();
+  const content = data.choices?.[0]?.message?.content;
+  if (!content) throw new Error(`Groq model ${model} returned empty content`);
+  return content.trim();
+}
+
 async function callLLM(systemPrompt, userMessage, historyMessages = [], maxTokens = 1500) {
   const base = [...historyMessages, { role: 'user', content: userMessage }];
   let lastError;
+
+  // Try Groq first (fastest), then fall back to OpenRouter
+  const groqKey = process.env.GROQ_API_KEY;
+  if (groqKey) {
+    try {
+      const messages = [{ role: 'system', content: systemPrompt }, ...base];
+      return await callGroq('meta-llama/llama-4-scout-17b-16e-instruct', messages, maxTokens);
+    } catch (e) {
+      lastError = e;
+      console.log('Groq text failed, falling back to OpenRouter:', e.message);
+    }
+  }
 
   for (const model of FALLBACK_MODELS) {
     let needsInjection = false;
@@ -184,23 +216,20 @@ async function callLLM(systemPrompt, userMessage, historyMessages = [], maxToken
 
 async function callVisionLLM(systemPrompt, imageBase64, imageMime, text, maxTokens = 1500) {
   const dataUrl = `data:${imageMime};base64,${imageBase64}`;
-  let lastError;
 
-  for (const model of VISION_MODELS) {
-    try {
-      return await callOpenRouter(model, [{
-        role: 'user',
-        content: [
-          { type: 'image_url', image_url: { url: dataUrl } },
-          { type: 'text',      text: `${systemPrompt}\n\n${text}` },
-        ],
-      }], maxTokens);
-    } catch (e) {
-      lastError = e;
-      if (e.status === 429) await delay(2000);
-    }
+  // Use Groq for vision (free, fast, reliable)
+  try {
+    return await callGroq(GROQ_VISION_MODEL, [{
+      role: 'user',
+      content: [
+        { type: 'image_url', image_url: { url: dataUrl } },
+        { type: 'text',      text: `${systemPrompt}\n\n${text}` },
+      ],
+    }], maxTokens);
+  } catch (e) {
+    console.error('Groq vision failed:', e.message);
+    throw e;
   }
-  throw lastError || new Error('All vision models failed');
 }
 
 function parseJsonObject(raw) {
