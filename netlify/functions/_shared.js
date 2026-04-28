@@ -17,7 +17,7 @@ function filterCatalog({ bedSize, sleepTemp, fabric, styleVibe, maxResults = 12 
   let results = [...CATALOG];
 
   if (bedSize && bedSize !== 'No preference')
-    results = results.filter(p => (p.bedSize || []).includes(bedSize));
+    results = results.filter(p => !p.bedSize || p.bedSize.length === 0 || p.bedSize.includes(bedSize));
 
   if (fabric && fabric !== 'No preference') {
     const allowed = FABRIC_MAP[fabric] || [];
