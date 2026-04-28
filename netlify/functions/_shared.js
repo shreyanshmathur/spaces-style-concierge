@@ -2,10 +2,10 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared utilities for all SPACES Style Concierge Netlify Functions
 // ─────────────────────────────────────────────────────────────────────────────
-const path = require('path');
 
 // ── Catalog ───────────────────────────────────────────────────────────────────
-const CATALOG = require(path.join(__dirname, '../../backend/data/spaces_catalog.json'));
+// NOTE: Use a static string so Netlify's bundler can trace the dependency.
+const CATALOG = require('../../backend/data/spaces_catalog.json');
 
 const FABRIC_MAP = {
   Cotton: ['Hygro Cotton', 'Percale Cotton', 'Sateen Cotton', 'Flannel', 'Cotton Blend'],
