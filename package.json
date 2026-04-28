@@ -1,0 +1,12 @@
+{
+  "name": "spaces-style-concierge",
+  "version": "1.0.0",
+  "description": "SPACES Style Concierge — AI shopping widget with Netlify Functions backend",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "netlify dev"
+  }
+}

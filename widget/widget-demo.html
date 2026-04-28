@@ -304,7 +304,7 @@
       <div class="poc-banner-title">POC Demo — SPACES Style Concierge</div>
       <div class="poc-banner-text">
         The chat bubble (bottom right) is the AI widget. <strong>Click any "Add to Cart" button</strong> on a product to see the cross-sell experience.<br/>
-        <strong>To enable AI:</strong> add your <code>OPENROUTER_API_KEY</code> to <code>backend/.env</code> and run <code>uvicorn main:app --port 8001</code>.
+        <strong>To enable AI:</strong> set your <code>OPENROUTER_API_KEY</code> environment variable in Netlify (Site settings → Environment variables).
       </div>
     </div>
   </div>
@@ -380,12 +380,12 @@
   </div>
 
   <!-- ✅ THE WIDGET -->
-  <script src="spaces-widget.js" data-api-url="http://localhost:8003"></script>
+  <script src="spaces-widget.js" data-api-url=""></script>
 
   <script>
   (function () {
     'use strict';
-    var API = 'http://localhost:8003';
+    var API = '';
     var cartCount = 0;
     var activeFilter = 'all';
 
@@ -502,7 +502,7 @@
       })
       .catch(function () {
         document.getElementById('product-grid').innerHTML =
-          '<div class="grid-loading" style="color:#A83820">⚠️ Could not load products. Is the backend running on port 8001?</div>';
+          '<div class="grid-loading" style="color:#A83820">⚠️ Could not load products. Check that the Netlify Functions are deployed.</div>';
       });
 
     // Filter tabs

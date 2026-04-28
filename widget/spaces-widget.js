@@ -3,7 +3,7 @@
  * Drop-in AI shopping assistant for spaces.in
  * Version: 0.2.0-poc  — photo + text mode
  *
- * Usage: <script src="spaces-widget.js" data-api-url="http://localhost:8000"></script>
+ * Usage: <script src="spaces-widget.js" data-api-url=""></script>
  */
 (function () {
   "use strict";

@@ -1,0 +1,18 @@
+[build]
+  publish = "widget"
+  functions = "netlify/functions"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# Map /api/* → Netlify Functions (so frontend uses clean /api/ paths)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# SPA fallback — serve widget-demo.html for any unknown route
+[[redirects]]
+  from = "/*"
+  to = "/widget-demo.html"
+  status = 200
