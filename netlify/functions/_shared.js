@@ -123,19 +123,15 @@ function relatedReason(product, selected) {
 
 // ── OpenRouter LLM ────────────────────────────────────────────────────────────
 const FALLBACK_MODELS = [
-  'openai/gpt-oss-120b:free',
-  'openai/gpt-oss-20b:free',
-  'minimax/minimax-m2.5:free',
-  'google/gemma-4-31b-it:free',
-  'google/gemma-3-27b-it:free',
   'meta-llama/llama-3.3-70b-instruct:free',
+  'google/gemini-2.0-flash-lite-preview-02-05:free',
   'meta-llama/llama-3.2-3b-instruct:free',
+  'nvidia/llama-3.1-nemotron-70b-instruct:free',
 ];
 const VISION_MODELS = [
-  'anthropic/claude-haiku-4.5',
-  'amazon/nova-lite-v1',
-  'nvidia/nemotron-nano-12b-v2-vl:free',
-  'google/gemma-4-31b-it:free',
+  'meta-llama/llama-3.2-11b-vision-instruct:free',
+  'google/gemini-2.0-flash-lite-preview-02-05:free',
+  'google/gemini-2.0-pro-exp-02-05:free'
 ];
 
 async function callOpenRouter(model, messages, maxTokens) {
