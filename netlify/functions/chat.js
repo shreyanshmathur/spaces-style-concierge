@@ -58,7 +58,7 @@ exports.handler = async (event) => {
     return {
       statusCode: 200,
       headers: corsHeaders(),
-      body: JSON.stringify({ reply }),
+      body: JSON.stringify({ message: reply }),
     };
   } catch (err) {
     console.error('chat error:', err);
