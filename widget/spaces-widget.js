@@ -281,6 +281,47 @@
       border-radius:10px; padding:10px 14px; font-size:12.5px;
       align-self:stretch; animation:fadeUp .25s ease both;
     }
+
+    /* ── Section label (Complete the Look header) ── */
+    .sp-section-label {
+      font-family:'Cormorant Garamond',serif; font-size:15px; font-weight:600;
+      color:#2D2520; align-self:stretch; letter-spacing:.02em;
+      border-bottom:1px solid #F0E8E0; padding-bottom:8px;
+      animation:fadeUp .25s ease both;
+    }
+
+    /* ── Build the Look CTA ── */
+    .sp-build-look {
+      align-self:center; background:none;
+      border:1.5px solid #C9784A; color:#C9784A;
+      font-family:Inter,sans-serif; font-size:12.5px; font-weight:600;
+      padding:9px 20px; border-radius:999px; cursor:pointer;
+      letter-spacing:.02em; transition:all .2s ease;
+      animation:fadeUp .3s ease both; margin-top:4px;
+    }
+    .sp-build-look:hover { background:#C9784A; color:#fff; transform:translateY(-1px); box-shadow:0 4px 14px rgba(201,120,74,.35); }
+
+    /* ── Quick chips in message stream ── */
+    .sp-quick-chips {
+      display:flex; flex-wrap:wrap; gap:6px;
+      align-self:stretch; margin-top:2px;
+      animation:fadeUp .3s ease both;
+    }
+
+    /* ── Smart offer bubble ── */
+    .sp-offer-bubble {
+      background:linear-gradient(135deg,#FFF8E7,#FFF0CC);
+      border:1.5px solid #F0B429; border-radius:12px;
+      padding:12px 16px; align-self:stretch;
+      animation:fadeUp .3s ease both;
+    }
+    .sp-offer-headline { font-size:13px; font-weight:700; color:#92640A; margin-bottom:4px; }
+    .sp-offer-msg { font-size:12px; color:#7A5A1A; line-height:1.5; }
+    .sp-offer-badge {
+      display:inline-block; background:#F0B429; color:#fff;
+      font-size:10px; font-weight:700; padding:3px 8px;
+      border-radius:4px; margin-top:8px; letter-spacing:.04em; text-transform:uppercase;
+    }
   `;
 
   // ── Questions for text flow ──────────────────────────────────────────────
@@ -310,6 +351,12 @@
     pendingImageDataURL: null,
     roomImageBase64: null,
     roomImageMime: null,
+    // Feature flags — reset each session
+    lookShown: false,
+    offerShown: false,
+    quickChipsShown: false,
+    sessionStartTime: null,
+    offerTimer: null,
   };
 
   // ── DOM refs ─────────────────────────────────────────────────────────────
@@ -418,6 +465,7 @@
 
   // ── Reset ────────────────────────────────────────────────────────────────
   function resetChat() {
+    if (state.offerTimer) clearTimeout(state.offerTimer);
     state = {
       stage: "idle",
       mode: null,
@@ -431,6 +479,11 @@
       pendingImageDataURL: null,
       roomImageBase64: null,
       roomImageMime: null,
+      lookShown: false,
+      offerShown: false,
+      quickChipsShown: false,
+      sessionStartTime: null,
+      offerTimer: null,
     };
     messagesEl.innerHTML = "";
     clearChips();
@@ -675,11 +728,21 @@
   // ── Chat mode ────────────────────────────────────────────────────────────
   function activateChatMode() {
     state.stage = "chat";
-    addBotMessage("Feel free to ask me anything: 'Show warmer options', 'What fabric is this?', or upload another photo to compare! 💬");
+    state.sessionStartTime = Date.now();
+    addBotMessage("Feel free to ask me anything — fabric care, sizing, styling ideas, or just upload another photo to compare.");
     inputRowEl.style.display = "flex";
     chipsEl.style.display = "none";
     inputEl.focus();
-    inputEl.placeholder = "Ask a question or upload a photo…";
+    inputEl.placeholder = "Ask me anything…";
+
+    // Feature 3: Post-purchase quick chips after a short delay
+    setTimeout(() => showPostPurchaseChips(), 700);
+
+    // Feature 1: Build the Look CTA after chips appear
+    setTimeout(() => renderBuildTheLookCTA(), 1400);
+
+    // Feature 2: Smart offer after 45 s of browsing
+    state.offerTimer = setTimeout(() => fetchSmartOffer(), 45000);
   }
 
   async function handleSend() {
@@ -724,6 +787,11 @@
       state.chatHistory.push({ role:"assistant", content: data.message });
       addBotMessage(data.message);
       if (data.suggested_products && data.suggested_products.length) renderProductCards(data.suggested_products);
+      // Trigger smart offer earlier if user has been active
+      if (!state.offerShown && state.sessionStartTime) {
+        const elapsed = (Date.now() - state.sessionStartTime) / 1000;
+        if (elapsed > 20 && state.chatHistory.length >= 4) fetchSmartOffer();
+      }
     } catch (err) {
       removeTyping();
       addError("Sorry, something went wrong. Please try again.");
@@ -879,6 +947,128 @@
       wrapper.appendChild(card);
     });
     messagesEl.appendChild(wrapper);
+    scrollToBottom();
+  }
+
+  // ── Feature 1: Colour & Texture Coordination ────────────────────────────────
+  function renderBuildTheLookCTA() {
+    if (state.lookShown || !state.recommendations.length) return;
+    const btn = document.createElement("button");
+    btn.className = "sp-build-look";
+    btn.id = "sp-build-look-btn";
+    btn.textContent = "✨ Build the Complete Look";
+    btn.addEventListener("click", fetchCoordinatedLook);
+    messagesEl.appendChild(btn);
+    scrollToBottom();
+  }
+
+  async function fetchCoordinatedLook() {
+    if (state.lookShown) return;
+    state.lookShown = true;
+    const ctaBtn = shadowRoot.getElementById("sp-build-look-btn");
+    if (ctaBtn) ctaBtn.remove();
+
+    showTyping();
+    try {
+      const anchor = state.recommendations[0];
+      const res = await fetch(`${API_BASE}/api/coordinate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          anchor_sku:      anchor?.sku || null,
+          style_aesthetic: state.preferences?.styleVibe || null,
+        }),
+      });
+      removeTyping();
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      addSectionLabel(`✨ ${data.look_title || "Complete the Look"}`);
+      addBotMessage(data.intro_message || "Here is a curated set that coordinates beautifully with your pick.");
+      if (data.items && data.items.length) renderProductCards(data.items);
+    } catch {
+      removeTyping();
+      addBotMessage("To complete the look, explore our pillow covers, towels, and bath mats — all designed to coordinate with your choice.");
+    }
+  }
+
+  function addSectionLabel(text) {
+    const el = document.createElement("div");
+    el.className = "sp-section-label";
+    el.textContent = text;
+    messagesEl.appendChild(el);
+    scrollToBottom();
+  }
+
+  // ── Feature 2: Dynamic Pricing & Smart Offers ────────────────────────────────
+  async function fetchSmartOffer() {
+    if (state.offerShown) return;
+    try {
+      const cartValue = state.recommendations.reduce(
+        (sum, r) => sum + (r.discounted_price || r.price || 0), 0
+      );
+      const sessionSeconds = state.sessionStartTime
+        ? Math.floor((Date.now() - state.sessionStartTime) / 1000)
+        : 0;
+
+      const res = await fetch(`${API_BASE}/api/smart-offer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cart_skus:       state.recommendations.map(r => r.sku).filter(Boolean),
+          cart_value:      cartValue,
+          session_seconds: sessionSeconds,
+        }),
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.has_offer) {
+        state.offerShown = true;
+        addOfferBubble(data);
+      }
+    } catch {
+      // Offer is an enhancement — fail silently
+    }
+  }
+
+  function addOfferBubble(data) {
+    const el = document.createElement("div");
+    el.className = "sp-offer-bubble";
+    el.innerHTML = `
+      <div class="sp-offer-headline">${data.headline || ""}</div>
+      <div class="sp-offer-msg">${data.message || ""}</div>
+      ${data.badge ? `<span class="sp-offer-badge">${data.badge}</span>` : ""}`;
+    messagesEl.appendChild(el);
+    scrollToBottom();
+  }
+
+  // ── Feature 3: Conversational Product Assistant quick chips ──────────────────
+  function showPostPurchaseChips() {
+    if (state.quickChipsShown) return;
+    state.quickChipsShown = true;
+
+    const wrap = document.createElement("div");
+    wrap.className = "sp-quick-chips";
+
+    const quickReplies = [
+      { label: "🧺 Care tips",          text: "How should I care for and wash my bedding?" },
+      { label: "↩ Returns & delivery",  text: "What is the return policy and how long does delivery take?" },
+      { label: "✨ What pairs with this?", text: "What other products would pair well with what I have chosen?" },
+    ];
+
+    quickReplies.forEach(({ label, text }) => {
+      const btn = document.createElement("button");
+      btn.className = "sp-chip";
+      btn.style.fontSize = "11.5px";
+      btn.textContent = label;
+      btn.addEventListener("click", () => {
+        wrap.remove();
+        inputEl.value = text;
+        handleSend();
+      });
+      wrap.appendChild(btn);
+    });
+
+    messagesEl.appendChild(wrap);
     scrollToBottom();
   }
 
