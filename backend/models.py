@@ -43,6 +43,19 @@ class RelatedProductsRequest(BaseModel):
     limit: int = 4
 
 
+class CoordinateRequest(BaseModel):
+    anchor_sku: Optional[str] = None
+    style_aesthetic: Optional[str] = None
+    preferences: Optional[dict] = None
+
+
+class SmartOfferRequest(BaseModel):
+    cart_skus: list[str] = Field(default_factory=list)
+    cart_value: float = 0
+    session_seconds: float = 0
+    viewed_skus: list[str] = Field(default_factory=list)
+
+
 # ── Outgoing ────────────────────────────────────────────────────────────────
 
 class ProductCard(BaseModel):
@@ -73,3 +86,29 @@ class CatalogResponse(BaseModel):
 class RelatedProductsResponse(BaseModel):
     intro_message: str
     recommendations: list[ProductCard]
+
+
+class CoordinateItem(BaseModel):
+    sku: str
+    name: str
+    category: str
+    thumbnail_url: str
+    product_url: str
+    price: int
+    discounted_price: Optional[int] = None
+    reason: str
+    confidence: str = "medium"
+
+
+class CoordinateResponse(BaseModel):
+    look_title: str
+    intro_message: str
+    items: list[CoordinateItem]
+
+
+class SmartOfferResponse(BaseModel):
+    has_offer: bool
+    offer_type: Optional[str] = None
+    headline: Optional[str] = None
+    message: Optional[str] = None
+    badge: Optional[str] = None

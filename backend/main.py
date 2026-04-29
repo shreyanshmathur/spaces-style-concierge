@@ -16,13 +16,23 @@ from models import (
     ChatMessage,
     ChatRequest,
     ChatResponse,
+    CoordinateRequest,
+    CoordinateResponse,
     RecommendRequest,
     RecommendResponse,
     RelatedProductsRequest,
     RelatedProductsResponse,
     RoomAnalysisRequest,
+    SmartOfferRequest,
+    SmartOfferResponse,
 )
-from prompts import CHAT_SYSTEM_PROMPT, RECOMMENDATION_SYSTEM_PROMPT, ROOM_ANALYSIS_SYSTEM_PROMPT
+from prompts import (
+    CHAT_SYSTEM_PROMPT,
+    COORDINATE_SYSTEM_PROMPT,
+    RECOMMENDATION_SYSTEM_PROMPT,
+    ROOM_ANALYSIS_SYSTEM_PROMPT,
+    SMART_OFFER_SYSTEM_PROMPT,
+)
 
 load_dotenv()
 
@@ -576,6 +586,135 @@ def chat(req: ChatRequest):
         raise
     except Exception as e:
         raise HTTPException(status_code=502, detail=f"OpenRouter API error: {e}")
+
+
+# ── Helpers for new features ──────────────────────────────────────────────────
+
+_COORD_CATEGORIES = ["Pillow Cover", "Bath Towel", "Bath Mat", "Cushion Cover", "Duvet Cover"]
+
+_HARDCODED_OFFERS: dict[str, dict] = {
+    "gift_wrap": {
+        "offer_type": "gift_wrap",
+        "headline": "Complimentary Gift Wrapping",
+        "message": "Your order qualifies for complimentary SPACES gift wrapping — the perfect finishing touch.",
+        "badge": "Gift Ready",
+    },
+    "shipping": {
+        "offer_type": "shipping",
+        "headline": "Free Shipping Unlocked",
+        "message": "Your order qualifies for free pan-India delivery. A little something from us to you.",
+        "badge": "Free Shipping",
+    },
+    "topup": {
+        "offer_type": "topup",
+        "headline": "Almost There",
+        "message": "Add a little more to your cart to unlock complimentary shipping across India.",
+        "badge": "Free Shipping Soon",
+    },
+    "browse_nudge": {
+        "offer_type": "browse_nudge",
+        "headline": "Welcome to SPACES",
+        "message": "Take your time exploring. Your Style Concierge is here whenever you need a hand.",
+        "badge": None,
+    },
+}
+
+
+@app.post("/api/coordinate", response_model=CoordinateResponse)
+def coordinate(req: CoordinateRequest):
+    anchor = _find_product(req.anchor_sku) if req.anchor_sku else None
+    coord_items = [p for p in CATALOG if p.get("category") in _COORD_CATEGORIES]
+
+    if anchor and anchor.get("styleAesthetic"):
+        style_match = [
+            p for p in coord_items
+            if any(s in p.get("styleAesthetic", []) for s in anchor["styleAesthetic"])
+        ]
+        if len(style_match) >= 3:
+            coord_items = style_match
+
+    anchor_text = (
+        f"SKU: {anchor['sku']}, Name: {anchor['name']}, "
+        f"Color: {anchor.get('color', '')}, "
+        f"Style: {', '.join(anchor.get('styleAesthetic', []))}"
+        if anchor
+        else f"Style preference: {req.style_aesthetic or 'versatile'}"
+    )
+
+    def _fallback_items() -> list[dict]:
+        seen: set[str] = set()
+        items = []
+        for p in coord_items:
+            if p["category"] not in seen:
+                seen.add(p["category"])
+                items.append({
+                    "sku": p["sku"],
+                    "name": p["name"],
+                    "category": p["category"],
+                    "thumbnail_url": p["thumbnailUrl"],
+                    "product_url": p["productUrl"],
+                    "price": p["price"],
+                    "discounted_price": p.get("discountedPrice"),
+                    "reason": "A harmonious addition to complete your coordinated home look.",
+                    "confidence": "medium",
+                })
+            if len(items) >= 4:
+                break
+        return items
+
+    if not _client:
+        return CoordinateResponse(
+            look_title="Curated for You",
+            intro_message="Here is a coordinated set I have put together to complement your style. (Demo mode — add API key for AI-curated colour harmony.)",
+            items=_fallback_items(),
+        )
+
+    system_prompt = COORDINATE_SYSTEM_PROMPT.format(
+        anchor=anchor_text,
+        catalog=catalog_to_prompt_text(coord_items),
+    )
+
+    raw = ""
+    try:
+        raw = _call_llm(system_prompt, "Build a complete coordinated look for this customer.")
+        data = _parse_json_object(raw)
+        return CoordinateResponse(**data)
+    except Exception:
+        return CoordinateResponse(
+            look_title="Complete the Look",
+            intro_message="Here is a curated set that coordinates beautifully with your style.",
+            items=_fallback_items(),
+        )
+
+
+@app.post("/api/smart-offer", response_model=SmartOfferResponse)
+def smart_offer(req: SmartOfferRequest):
+    FREE_SHIPPING_THRESHOLD = 2000
+    topup_amount = max(0, FREE_SHIPPING_THRESHOLD - req.cart_value)
+
+    if req.cart_value >= 5000:
+        offer_type, context = "gift_wrap", f"Customer spent Rs.{req.cart_value:.0f}. Offer complimentary gift wrapping as a premium touch."
+    elif req.cart_value >= FREE_SHIPPING_THRESHOLD:
+        offer_type, context = "shipping", f"Cart value Rs.{req.cart_value:.0f}. Free shipping is unlocked — celebrate this warmly."
+    elif req.cart_value > 0 and topup_amount <= 800:
+        offer_type, context = "topup", f"Customer needs Rs.{topup_amount:.0f} more for free shipping (threshold Rs.{FREE_SHIPPING_THRESHOLD}). Gentle nudge."
+    elif req.session_seconds > 45 and req.cart_value == 0:
+        offer_type, context = "browse_nudge", f"Customer has been browsing {int(req.session_seconds)}s without adding anything. Warm, unhurried welcome."
+    else:
+        return SmartOfferResponse(has_offer=False)
+
+    if not _client:
+        return SmartOfferResponse(has_offer=True, **_HARDCODED_OFFERS[offer_type])
+
+    system_prompt = SMART_OFFER_SYSTEM_PROMPT.format(context=context)
+    raw = ""
+    try:
+        raw = _call_llm(system_prompt, "Generate the offer message.", max_tokens=250)
+        data = _parse_json_object(raw)
+        return SmartOfferResponse(has_offer=True, **data)
+    except Exception:
+        return SmartOfferResponse(has_offer=True, **_HARDCODED_OFFERS[offer_type])
+
 
 # Serve the frontend widget directory
 app.mount("/", StaticFiles(directory="../widget", html=True), name="widget")
